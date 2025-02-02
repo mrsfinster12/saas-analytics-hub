@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 const Auth = () => {
@@ -24,23 +24,38 @@ const Auth = () => {
           email,
           password,
         });
-        if (error) throw error;
+        if (error) {
+          toast({
+            title: "Error",
+            description: error.message,
+            variant: "destructive",
+          });
+          return;
+        }
         toast({
           title: "Welcome back!",
           description: "Successfully logged in.",
         });
+        navigate("/dashboard");
       } else {
         const { error } = await supabase.auth.signUp({
           email,
           password,
         });
-        if (error) throw error;
+        if (error) {
+          toast({
+            title: "Error",
+            description: error.message,
+            variant: "destructive",
+          });
+          return;
+        }
         toast({
           title: "Welcome!",
           description: "Account created successfully. Please check your email for verification.",
         });
+        navigate("/dashboard");
       }
-      navigate("/dashboard");
     } catch (error: any) {
       toast({
         title: "Error",
@@ -94,6 +109,7 @@ const Auth = () => {
               required
               placeholder="••••••••"
               disabled={loading}
+              minLength={6}
             />
           </div>
 
